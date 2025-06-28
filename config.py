@@ -34,23 +34,40 @@ migrate = Migrate(app, db)
 
 class User(db.Model, UserMixin):
 
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(100), nullable=False, unique=True)
+    password = db.Column(db.String(100), nullable=False)
+    firstname = db.Column(db.String(100), nullable=False)
+    lastname = db.Column(db.String(100), nullable=False)
+    phone = db.Column(db.String(100), nullable=False)
+    role = db.Column(db.String(100), nullable=False)
+    log = db.relationship("Log", uselist=False, back_populates="user")
+    bookings = db.relationship('Booking', backref='user', lazy=True)
 
-class Log(db.Model):
+    def __init__(self, email, firstname, lastname, phone, password):
+        self.email = email
+        self.firstname = firstname
+        self.lastname = lastname
+        self.phone = phone
+        self.password = password
+        self.role = "end_user"
 
 
-class Booking(db.Model, UserMixin):
+#class Log(db.Model):
 
 
+#class Booking(db.Model, UserMixin):
 
-class City(db.Model, UserMixin):
+
+#lass City(db.Model, UserMixin):
 
 
-class ParkingLot(db.Model, UserMixin):
+#class ParkingLot(db.Model, UserMixin):
 
 
 from accounts.views import accounts_bp
-from dashboard.views import dashboard_bp
-from booking.views import booking_bp
+#from dashboard.views import dashboard_bp
+#from booking.views import booking_bp
 app.register_blueprint(accounts_bp)
-app.register_blueprint(dashboard_bp)
-app.register_blueprint(booking_bp)
+#app.register_blueprint(dashboard_bp)
+#pp.register_blueprint(booking_bp)
