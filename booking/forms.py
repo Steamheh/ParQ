@@ -5,3 +5,4 @@ from wtforms.validators import DataRequired
 
 class BookingForm(FlaskForm):
 
+    city = SelectField("City", choices=[], validators=[DataRequired()])
