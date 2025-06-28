@@ -52,6 +52,14 @@ class User(db.Model, UserMixin):
         self.password = password
         self.role = "end_user"
 
+    def check_password(self, password):
+
+        try:
+            correct_password = passwordHasher.verify(self.password, password)
+        except:
+            correct_password = False
+        return correct_password
+
 
 #class Log(db.Model):
 
@@ -65,7 +73,8 @@ class User(db.Model, UserMixin):
 #class ParkingLot(db.Model, UserMixin):
 
 
-from accounts.views import accounts_bp
+from accounts.views import accounts_bp, passwordHasher
+
 #from dashboard.views import dashboard_bp
 #from booking.views import booking_bp
 app.register_blueprint(accounts_bp)
