@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from flask import Blueprint, render_template, flash, redirect, url_for, session, request
 from flask_login import login_user, logout_user, current_user
 from argon2 import PasswordHasher
@@ -13,11 +13,10 @@ passwordHasher = PasswordHasher()
 @accounts_bp.route('/register', methods=['GET', 'POST'])
 def registration():
 
-
     if current_user.is_authenticated:
 
         flash('You are already logged in.', 'info')
-        return redirect(url_for('posts.posts'))
+        return redirect(url_for('dashboard.dashboard'))
 
 
     form = RegistrationForm()
@@ -41,6 +40,7 @@ def registration():
         db.session.add(new_user)
         db.session.commit()
 
+        new_user.generate_log()
 
         return redirect(url_for('accounts.login'))
 
@@ -52,9 +52,8 @@ def login():
 
     if current_user.is_authenticated:
 
-
         flash('You are already logged in.', 'info')
-        return redirect(url_for('posts.posts'))
+        return redirect(url_for('dashboard.dashboard'))
 
 
     form = LoginForm()
@@ -66,7 +65,7 @@ def login():
     max_attempts = 3
 
     if session['attempts'] >= max_attempts:
-        flash('Your accounts has been locked due to too many failed login attempts. ' +
+        flash('Your account has been locked due to too many failed login attempts. ' +
               'Click the link below to unlock.',
               category='danger')
         return render_template('accounts/locked.html')
@@ -76,33 +75,22 @@ def login():
         user = User.query.filter_by(email=form.email.data).first()
 
         if user and user.check_password(form.password.data):
-            session['attempts'] = 0  # Reset attempts on successful login
+            session['attempts'] = 0
             login_user(user)
-            # Editing the user log for login dates and IP addresses.
-            user.log.previouslogin = user.log.latestlogin
-            user.log.previousIP = user.log.latestIP
-            user.log.latestlogin = datetime.now()
-            user.log.latestIP = request.remote_addr
-            # Making the user's active field equal to true as they have now logged in
-            user.active = True
-            # Saving the log changes.
-            db.session.commit()
-            # If the user has only logged in once then they won't have a
-            # previous login to compare with.
-            if user.log.previouslogin is None:
-                user.current_streak = 0
-            # Adding 1 to the streak if today is one more day than the last login
-            elif user.log.latestlogin.date() == user.log.previouslogin.date() + datetime.timedelta(days=1):
-                user.current_streak += 1
-            # This would mean that the user has missed a day so the streak is reset
-            elif user.log.latestlogin != user.log.previouslogin:
-                user.current_streak = 0
-            # Saving the streak changes.
-            db.session.commit()
 
+
+            if user.log.latestlogin is not None:
+                user.log.previouslogin = user.log.latestlogin
+            user.log.latestlogin = datetime.now()
+
+            if user.log.latestIP is not None:
+                user.log.previousIP = user.log.latestIP
+            user.log.latestIP = request.remote_addr
+
+            db.session.commit()
 
             flash('Login successful!', category='success')
-            return redirect(url_for('accounts.accounts'))
+            return redirect(url_for('dashboard.dashboard'))
 
         session['attempts'] += 1
 
@@ -111,7 +99,7 @@ def login():
             category='danger')
 
         if session['attempts'] >= max_attempts:
-            flash('Your accounts has been locked due to too many failed login attempts.',
+            flash('Your account has been locked due to too many failed login attempts.',
                   category='danger')
             return render_template('accounts/locked.html')
 
@@ -120,9 +108,7 @@ def login():
 
 @accounts_bp.route('/logout')
 def logout():
-
     if current_user.is_authenticated:
-
         logout_user()
         flash('You have been logged out.', 'success')
         return redirect(url_for('accounts.login'))
