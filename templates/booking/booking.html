@@ -828,7 +828,7 @@
                         document.getElementById("submit-button").disabled = false;
                         document.getElementById("spot-summary").style.display = "block";
                         document.getElementById("summary-spot").textContent = `Spot #${spot.id}`;
-                        document.getElementById("summary-price").textContent = `€${spot.pricePerHour.toFixed(2)}`;
+                        document.getElementById("summary-price").textContent = `€${spot.pricePerHour.toFixed(2)*8}`;
                     } else {
                         document.getElementById("selected-spot-id").value = "";
                         document.getElementById("submit-button").disabled = true;
