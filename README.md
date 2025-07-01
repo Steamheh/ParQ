@@ -1,3 +1,20 @@
+# How to run application
+1. Use python 3.9 and download all packages form requirements.txt
+2. Run app.py
+3. Connect to 127.0.0.1:5000 on a web browser and the page should load
+4. Login with pre-existing user credentials:
+Email: mail@mail.com
+Password: A!bcd1234
+5. When going to pay for a booking and stripe asks for a credit card, use stripe's special testing card credentials:
+Card Number: 4242 4242 4242 4242 4242
+Exp: 12/23
+CVV: 123
+
+If pre-existing user does not work, either create a new account or restart fresh with a new db. If you would like to continue with the second option then:
+1. Delete folders and files: Instance + Migrations
+2. Write `flask db init` -> `flask db migrate` -> `flask db upgrade`
+3. New db successfully initialised and now register as a new user to get access to the dashboard and booking page
+
 # Inspiration
 The core idea behind ParQ was to solve a real-world daily problem that hundreds of thousands of people face in Cyprus, and in many other countries around the globe: parking. I have personally experienced the struggle of trying to find a parking spot no matter the day and hour of the week, leading me to waste time and sometimes not even successfully park. Having to take coins out to pay for my spot and the inaccurate information about available parking spots are also contributing factors to this overdue problem. I decided to take matters into my own hands and solve a problem using modern technology and AI, not only for my benefit but for the wider community.
 # What ParQ does
